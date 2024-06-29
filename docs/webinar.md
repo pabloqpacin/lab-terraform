@@ -53,6 +53,7 @@ terraform --version
 ## 5. *Hola Mundo* en Terraform
 
 ```bash
+mkdir repositorio-terraform && cd $_
 touch main.tf
 ```
 
@@ -65,8 +66,8 @@ provider "aws" {
 }
 
 resource "aws_instance" "nginx-server" {
-    ami           = "ami-044...29d" # Amazon Linux
-    instance_type = "t3.micro"      # 0.5 GB, 0.5 core
+    ami           = "ami-044...29d"         # Amazon Linux
+    instance_type = "t3.micro"              # 0.5 GB, 0.5 core
 }
 ```
 
@@ -108,7 +109,8 @@ terraform destroy
 ### nginx
 
 ```hcl
-resource "foo" "bbr" {
+resource "aws_instance" "nginx-server" {
+    # ...
 
     user_data = <<-EOF
                 #!/bin/bash
@@ -116,7 +118,6 @@ resource "foo" "bbr" {
                 sudo systemctl enable nginx
                 sudo systemctl start nginx
                 EOF
-
 }
 ```
 
@@ -133,6 +134,7 @@ ls nginx-server.key*
 
 ```hcl
 resource "aws_instance" "nginx-server" {
+    # ...
     key_name = aws_key_pair.nginx-server-ssh.key_name
 }
 
@@ -146,6 +148,7 @@ resource "aws_key_pair" "nginx-server-ssh" {
 
 ```hcl
 resource "aws_instance" "nginx-server" {
+    # ...
     vpc_security_group_ids = [
         # nota: no conocemos el id, abstracción porque Terraform lo conoce via importación
 	    aws_security_group.nginx-server-sg.id
@@ -210,6 +213,8 @@ Para identificar las Instancias en la consola de AWS.
 
 ```hcl
 resource "aws_instance" "nginx-server" {
+    # ...
+
     tags = {
         Name        = "nginx-server"
         Environment = "test"
@@ -222,6 +227,7 @@ resource "aws_instance" "nginx-server" {
 }
 
 resource "aws_key_pair" "nginx-server-ssh" {
+    # ...
     tags = {
         Name        = "nginx-server-ssh"
         Environment = "test"
@@ -232,6 +238,7 @@ resource "aws_key_pair" "nginx-server-ssh" {
 }
 
 resource "aws_security_group" "nginx-server-sg" {
+    # ...
     tags = {
         Name        = "nginx-server-sg"
         Environment = "test"
